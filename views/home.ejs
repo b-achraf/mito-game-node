@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"
+      integrity="sha512-N5JbZMETkl+0SZh5l8OA2VxSfF120owfQyy54iAXTJIKuqAn3A9TrNz1ypB55o8aSU5MxaodEgv74wGUvgUynQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <center>
+      <h1>hello all</h1>
+    </center>
+    <div>
+      <input type="text" id="message" />
+      <button id="btn-send" onclick="sendMessage()">Send</button>
+    </div>
+    <div>
+      <button id="btn-send" onclick="showUsers()">Show users</button>
+    </div>
+    <table id="users-table">
+      <tr>
+        <th>ID</th>
+      </tr>
+    </table>
+    <script>
+      const socket = io("http://localhost:3001");
+      socket.on("connection", () => {
+        console.log("Connected");
+      });
+      socket.on("admin", (data) => {
+        const table = document.getElementById("users-table");
+        const table_head = document.createElement("th");
+        table_head.textContent = "ID";
+        table.innerHTML = "";
+        table.appendChild(table_head);
+        JSON.parse(data.users).forEach((id) => {
+          const row = document.createElement("tr");
+          const table_data = document.createElement("td");
+          table_data.textContent = id;
+          row.appendChild(table_data);
+          table.appendChild(row);
+        });
+      });
+      const sendMessage = () => {
+        socket.emit("message", {
+          content: document.getElementById("message").value,
+        });
+      };
+      const showUsers = () => {
+        socket.emit("admin", { key: "achraf" });
+      };
+    </script>
+  </body>
+</html>
